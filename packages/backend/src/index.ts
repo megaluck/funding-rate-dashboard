@@ -5,7 +5,7 @@ import { config } from './config/index.js';
 import { fundingRatesRoutes, exchangesRoutes } from './routes/funding-rates.routes.js';
 import { healthRoutes } from './routes/health.routes.js';
 import { startFetchScheduler, stopFetchScheduler } from './jobs/fetch-funding-rates.job.js';
-import { redis } from './cache/redis.js';
+import { redis, bullMQConnection } from './cache/redis.js';
 import { pool } from './db/client.js';
 
 const fastify = Fastify({
@@ -69,6 +69,7 @@ async function start() {
       await stopFetchScheduler();
       await fastify.close();
       await redis.quit();
+      await bullMQConnection.quit();
       await pool.end();
       process.exit(0);
     };

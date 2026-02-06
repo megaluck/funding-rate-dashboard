@@ -69,19 +69,21 @@ export class HyperliquidAdapter extends ExchangeAdapter {
         });
       }
 
-      const rates: FundingRate[] = fundingResponse.data.map((item) => {
-        const assetCtx = assetCtxMap.get(item.coin);
-        const fundingRate = parseFloat(item.funding);
+      const rates: FundingRate[] = fundingResponse.data
+        .filter((item) => item && item.coin) // Filter out invalid items
+        .map((item) => {
+          const assetCtx = assetCtxMap.get(item.coin);
+          const fundingRate = parseFloat(item.funding || '0');
 
-        return this.createFundingRate({
-          rawSymbol: item.coin,
-          fundingRate,
-          markPrice: assetCtx ? parseFloat(assetCtx.markPx) : undefined,
-          indexPrice: assetCtx ? parseFloat(assetCtx.oraclePx) : undefined,
-          openInterest: assetCtx ? parseFloat(assetCtx.openInterest) : undefined,
-          volume24h: assetCtx ? parseFloat(assetCtx.dayNtlVlm) : undefined,
+          return this.createFundingRate({
+            rawSymbol: item.coin,
+            fundingRate,
+            markPrice: assetCtx ? parseFloat(assetCtx.markPx) : undefined,
+            indexPrice: assetCtx ? parseFloat(assetCtx.oraclePx) : undefined,
+            openInterest: assetCtx ? parseFloat(assetCtx.openInterest) : undefined,
+            volume24h: assetCtx ? parseFloat(assetCtx.dayNtlVlm) : undefined,
+          });
         });
-      });
 
       return this.successResult(rates);
     } catch (err) {

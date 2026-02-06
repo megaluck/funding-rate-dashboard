@@ -1,10 +1,18 @@
 import Redis from 'ioredis';
 import { config } from '../config/index.js';
 
+// Main Redis connection for caching
 export const redis = new Redis.default({
   host: config.redis.host,
   port: config.redis.port,
   maxRetriesPerRequest: 3,
+});
+
+// BullMQ requires maxRetriesPerRequest to be null
+export const bullMQConnection = new Redis.default({
+  host: config.redis.host,
+  port: config.redis.port,
+  maxRetriesPerRequest: null,
 });
 
 redis.on('error', (err: Error) => {

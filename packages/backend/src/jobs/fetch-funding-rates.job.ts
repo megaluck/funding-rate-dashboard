@@ -1,5 +1,5 @@
 import { Queue, Worker, type Job } from 'bullmq';
-import { redis } from '../cache/redis.js';
+import { bullMQConnection } from '../cache/redis.js';
 import { aggregatorService } from '../services/aggregator.service.js';
 import { config } from '../config/index.js';
 
@@ -7,7 +7,7 @@ const QUEUE_NAME = 'funding-rates';
 
 // Create queue
 export const fundingRatesQueue = new Queue(QUEUE_NAME, {
-  connection: redis,
+  connection: bullMQConnection,
   defaultJobOptions: {
     removeOnComplete: 100,
     removeOnFail: 50,
@@ -44,7 +44,7 @@ export const fundingRatesWorker = new Worker(
     }
   },
   {
-    connection: redis,
+    connection: bullMQConnection,
     concurrency: 1, // Only one fetch at a time
   }
 );

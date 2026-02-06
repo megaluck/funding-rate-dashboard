@@ -30,7 +30,9 @@ export const healthRoutes: FastifyPluginAsync = async (fastify) => {
         exchanges: exchangeStatuses.map((e) => ({
           id: e.id,
           status: e.error ? 'error' : 'ok',
-          lastCheck: e.lastFetchTime?.toISOString(),
+          lastCheck: e.lastFetchTime
+            ? (typeof e.lastFetchTime === 'string' ? e.lastFetchTime : e.lastFetchTime.toISOString())
+            : undefined,
         })),
       },
     };
